@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -31,12 +32,16 @@ public class NaverClovaTTS {
 
 	private String fileName; // save file name
 
+	private ArrayList<File> fileList;
+	
 	public NaverClovaTTS() {
 		initSpeakers();
 
 		clientId = "53edoaucxq";
 		clientSecret = null;
 
+		inputClientSecretByConsole();
+		
 		inputText = "만나서 반갑습니다.";
 		speaker = speakers.get("나라").getName();
 		volume = 0;
@@ -45,6 +50,8 @@ public class NaverClovaTTS {
 		musicFormat = "mp3";
 
 		fileName = "sample";
+		
+		fileList = new ArrayList<File>();
 	}
 
 	public NaverClovaTTS(String clientId, String clientSecret) {
@@ -158,8 +165,6 @@ public class NaverClovaTTS {
 	}
 
 	public void TTS() {
-		clientSecret = inputClientSecret();
-
 		try {
 			String text = URLEncoder.encode(inputText, "UTF-8"); // 13자
 
@@ -202,6 +207,8 @@ public class NaverClovaTTS {
 				}
 				is.close();
 
+				fileList.add(f);
+				
 				System.out.println(tempname + " is write");
 
 			} else { // 오류 발생
@@ -219,15 +226,17 @@ public class NaverClovaTTS {
 		}
 	}
 
-	private String inputClientSecret() {
+	private void inputClientSecretByConsole() {
 		if (clientSecret != null)
-			return clientSecret;
+			return;
 
 		Scanner sc = new Scanner(System.in);
 
 		System.out.print("Client Secret : ");
 
-		return sc.nextLine();
+		clientSecret = sc.nextLine();
+		
+		return;
 	}
 
 	public void TTS(String inputText) {
@@ -245,6 +254,18 @@ public class NaverClovaTTS {
 		TTS(inputText, fileName);
 	}
 
+	public void removeFiles() {
+		for (File file : fileList) {
+			if (file.exists()) {
+				if(file.delete()) {
+					System.out.println(file.getName() + " delete");
+				} else {
+					System.out.println(file.getName() + " delete failed");
+				}
+			}
+		}
+	}
+	
 	public static void main(String[] args) {
 		NaverClovaTTS ncTTS = new NaverClovaTTS();
 //		ncTTS.TTS();
@@ -257,4 +278,6 @@ public class NaverClovaTTS {
 			ncTTS.TTS(inputText, fileName, speakers.get(key).getKorName());
 		}
 	}
+	
+
 }

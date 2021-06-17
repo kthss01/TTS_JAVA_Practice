@@ -33,15 +33,16 @@ public class NaverClovaTTS {
 	private String fileName; // save file name
 
 	private ArrayList<File> fileList;
-	
+
 	public NaverClovaTTS() {
 		initSpeakers();
 
 		clientId = "53edoaucxq";
-		clientSecret = null;
+//		clientSecret = null;
+		clientSecret = "LuXyY1YDmINSNaXwlOfsdLtQHX5vML9sEP1aaUYg";
 
 		inputClientSecretByConsole();
-		
+
 		inputText = "만나서 반갑습니다.";
 		speaker = speakers.get("나라").getName();
 		volume = 0;
@@ -50,7 +51,7 @@ public class NaverClovaTTS {
 		musicFormat = "mp3";
 
 		fileName = "sample";
-		
+
 		fileList = new ArrayList<File>();
 	}
 
@@ -164,6 +165,46 @@ public class NaverClovaTTS {
 		return speakers;
 	}
 
+	public ArrayList<File> getFileList() {
+		return fileList;
+	}
+
+	public void setSpeaker(String speaker) {
+		this.speaker = speaker;
+	}
+
+	public String selectSpeaker(String speakerKorName) {
+		if (speakers.get(speakerKorName) == null)
+			// 찾지 못하면
+			return speakers.get("나라").getName();
+
+		return speakers.get(speakerKorName).getName();
+	}
+	
+	public int getVolume() {
+		return volume;
+	}
+	
+	public void setVolume(int volume) {
+		this.volume = volume;
+	}
+	
+	public int getSpeed() {
+		return speed;
+	}
+	
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+	
+	public int getPitch() {
+		return pitch;
+	}
+	
+	public void setPitch(int pitch) {
+		this.pitch = pitch;
+	}
+
 	public void TTS() {
 		try {
 			String text = URLEncoder.encode(inputText, "UTF-8"); // 13자
@@ -197,7 +238,7 @@ public class NaverClovaTTS {
 
 				// 랜덤한 이름으로 mp3 파일 생성
 //                String tempname = Long.valueOf(new Date().getTime()).toString();
-				String tempname = fileName + "_" + speaker;
+				String tempname = fileName + "_" + speaker + "_" + fileList.size();
 
 				File f = new File(tempname + ".mp3");
 				f.createNewFile();
@@ -208,7 +249,7 @@ public class NaverClovaTTS {
 				is.close();
 
 				fileList.add(f);
-				
+
 				System.out.println(tempname + " is write");
 
 			} else { // 오류 발생
@@ -235,7 +276,7 @@ public class NaverClovaTTS {
 		System.out.print("Client Secret : ");
 
 		clientSecret = sc.nextLine();
-		
+
 		return;
 	}
 
@@ -257,7 +298,7 @@ public class NaverClovaTTS {
 	public void removeFiles() {
 		for (File file : fileList) {
 			if (file.exists()) {
-				if(file.delete()) {
+				if (file.delete()) {
 					System.out.println(file.getName() + " delete");
 				} else {
 					System.out.println(file.getName() + " delete failed");
@@ -265,7 +306,7 @@ public class NaverClovaTTS {
 			}
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		NaverClovaTTS ncTTS = new NaverClovaTTS();
 //		ncTTS.TTS();
@@ -278,6 +319,9 @@ public class NaverClovaTTS {
 			ncTTS.TTS(inputText, fileName, speakers.get(key).getKorName());
 		}
 	}
-	
+
+	public String lastPlay() {
+		return fileList.get(fileList.size() - 1).getName();
+	}
 
 }
